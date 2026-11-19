@@ -2,6 +2,18 @@
 
 An original prototype for a bilateral PUSD / ERC20 stablecoin swap using paired SHA-256 hash locks. Targets BCH Chipnet and Sepolia or an EVM local chain. This does not connect to existing bridge liquidity and does not claim a completed cross-chain trade.
 
+## Bounty readiness
+
+**Status: prototype; not yet a qualifying bridge demonstration.** The project has contracts and preparation tools for both directions, plus a WizardConnect path for funding the BCH side with test tokens. It has not completed a funded swap, claim, or refund on either network. The PUSD and USDC labels are examples; no issuer-backed token integration is established. The public source is at [github.com/ansonj-dev/passage](https://github.com/ansonj-dev/passage); a hosted app and funded transaction evidence are still absent.
+
+The [bounty](https://bchblaze.cash/bounties/stablecoin-bridge/) asks for stablecoins to move both into and out of BCH. The entry still needs verified test-token contracts, a counterparty and liquidity, both-direction settlement evidence, and a public demo. See the [criterion audit](../AUDIT-00-01-04.md) and [funded-demo handoff](WIZARDCONNECT-HANDOFF.md) before attempting any transaction.
+
+### Asset choice and network boundary
+
+ParyonUSD is the recommended first BCH asset in the bounty. Its official site publishes PUSD's **mainnet** CashToken category as `2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544` ([ParyonUSD token details](https://paryonusd.com/), [deployment verification](https://paryonusd.com/docs/technical/contract-verification)). Passage currently prepares and funds Chipnet contracts only; this mainnet category must not be entered as if it were a Chipnet test token. Obtain an issuer-approved test category or use an explicitly identified test CashToken before running the demo. The test token is not PUSD.
+
+The bounty also mentions MoriaUSD, but Moria's live app currently displays a V1 contract vulnerability notice and says that version was disabled. Passage does not integrate MUSD. Do not use that token in a demo without checking the current protocol status and getting the issuer's guidance ([Moria status notice](https://app.moria.money/)).
+
 ## Run
 
 Requires Node 24. `npm ci`, then `npm run dev`; open http://localhost:4101. `npm run compile` generates CashScript and Solidity artifacts. `npm run build` builds the browser bundle.

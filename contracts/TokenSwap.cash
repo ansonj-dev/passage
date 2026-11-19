@@ -1,0 +1,13 @@
+pragma cashscript ^0.14.0;
+
+// One swap uses one token-bearing UTXO. Each party authorizes its own payout.
+contract TokenSwap(bytes32 hashlock, pubkey claimant, pubkey refunder, int expiry) {
+    function claim(bytes32 secret, sig signature) {
+        require(sha256(secret) == hashlock);
+        require(checkSig(signature, claimant));
+    }
+    function refund(sig signature) {
+        require(tx.time >= expiry);
+        require(checkSig(signature, refunder));
+    }
+}

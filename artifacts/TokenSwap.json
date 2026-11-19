@@ -1,0 +1,81 @@
+{
+  "contractName": "TokenSwap",
+  "constructorInputs": [
+    {
+      "name": "hashlock",
+      "type": "bytes32"
+    },
+    {
+      "name": "claimant",
+      "type": "pubkey"
+    },
+    {
+      "name": "refunder",
+      "type": "pubkey"
+    },
+    {
+      "name": "expiry",
+      "type": "int"
+    }
+  ],
+  "abi": [
+    {
+      "name": "claim",
+      "inputs": [
+        {
+          "name": "secret",
+          "type": "bytes32"
+        },
+        {
+          "name": "signature",
+          "type": "sig"
+        }
+      ]
+    },
+    {
+      "name": "refund",
+      "inputs": [
+        {
+          "name": "signature",
+          "type": "sig"
+        }
+      ]
+    }
+  ],
+  "bytecode": "OP_4 OP_PICK OP_0 OP_NUMEQUAL OP_IF OP_5 OP_ROLL OP_SIZE 20 OP_EQUALVERIFY OP_SHA256 OP_EQUALVERIFY OP_4 OP_ROLL OP_SWAP OP_CHECKSIG OP_NIP OP_NIP OP_NIP OP_ELSE OP_4 OP_ROLL OP_1 OP_NUMEQUALVERIFY OP_3 OP_ROLL OP_CHECKLOCKTIMEVERIFY OP_DROP OP_2SWAP OP_CHECKSIG OP_NIP OP_NIP OP_ENDIF",
+  "source": "pragma cashscript ^0.14.0;\n\n// One swap uses one token-bearing UTXO. Each party authorizes its own payout.\ncontract TokenSwap(bytes32 hashlock, pubkey claimant, pubkey refunder, int expiry) {\n    function claim(bytes32 secret, sig signature) {\n        require(sha256(secret) == hashlock);\n        require(checkSig(signature, claimant));\n    }\n    function refund(sig signature) {\n        require(tx.time >= expiry);\n        require(checkSig(signature, refunder));\n    }\n}\n",
+  "fingerprint": "f9704ce9357e9b971b59cace241e648080dfe23459660d8df9515eba080d1eba",
+  "debug": {
+    "bytecode": "5479009c63557a82012088a888547a7cac77777767547a519d537ab17572ac777768",
+    "sourceMap": "5:4:8:5;;;;;:19:5:33;;;;;6:16:6:30:1;:8::44;7:25:7:34:0;;:36::44;:8::47:1;5:50:8:5;;;:4;9::12::0;;;;10:27:10:33;;:8::35:1;;11:25:11:44:0;:8::47:1;9:35:12:5;;4:0:13:1",
+    "logs": [],
+    "requires": [
+      {
+        "ip": 15,
+        "line": 6
+      },
+      {
+        "ip": 20,
+        "line": 7
+      },
+      {
+        "ip": 30,
+        "line": 10
+      },
+      {
+        "ip": 34,
+        "line": 11
+      }
+    ],
+    "sourceTags": "5:9:pv;16:18:sc;30:31:sc"
+  },
+  "compiler": {
+    "name": "cashc",
+    "version": "0.14.0",
+    "options": {
+      "enforceFunctionParameterTypes": true,
+      "enforceLocktimeGuard": true
+    }
+  },
+  "updatedAt": "2026-11-19T08:22:05.920Z"
+}

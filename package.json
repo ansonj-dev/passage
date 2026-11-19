@@ -1,0 +1,35 @@
+{
+  "name": "passage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "vite build",
+    "compile": "node scripts/compile.js",
+    "test": "node --test",
+    "smoke": "node scripts/smoke.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@bitauth/libauth": "3.1.0-next.8",
+    "@wizardconnect/core": "0.2.11",
+    "@wizardconnect/dapp": "0.2.8",
+    "cashc": "^0.14.0",
+    "cashscript": "^0.14.0",
+    "ethers": "^6.17.0",
+    "express": "^5.3.0",
+    "qrcode": "1.5.4",
+    "vite": "^8.3.8"
+  },
+  "devDependencies": {
+    "solc": "^0.8.38"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
+  }
+}

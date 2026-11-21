@@ -2,6 +2,12 @@
 
 2026-11-19 UTC. Implemented and tested locally. **No real wallet was paired, no chain transaction was sent, no HTLC was funded and no swap was completed.**
 
+## Addendum: EVM WalletConnect v2 option
+
+The EVM side now offers a WalletConnect v2 path in addition to the injected EIP-1193 provider, using `@walletconnect/ethereum-provider` 2.26.0. The **Connect with WalletConnect** button calls `EthereumProvider.init({ projectId, chains:[11155111], optionalChains:[31337], showQrModal:true })`, then `.enable()`, wraps the result in an ethers `BrowserProvider`, takes the signer and applies the same 31337/Sepolia chain guard as the injected path, so lock/claim/refund are unchanged. A disconnect control calls the provider's `disconnect()` when present.
+
+This is **integrated in code only**. It reads the project ID from `VITE_WALLETCONNECT_PROJECT_ID`; no project ID is bundled or invented, and the button throws an explicit configuration error when the variable is unset. **No WalletConnect pairing was performed in this environment** — pairing needs a user-supplied WalletConnect/Reown Cloud project ID and a live external wallet, so real-wallet interoperability for the WalletConnect path remains UNVERIFIED. The injected-wallet path is unchanged. The browser production bundle builds with this dependency added; see the validation table below.
+
 ## Official API and architecture check
 
 Checked the [official dapp integration](https://docs.riftenlabs.com/wizardconnect/dapp/), [HD protocol](https://docs.riftenlabs.com/wizardconnect/protocol/), [public-key derivation](https://docs.riftenlabs.com/wizardconnect/pubkey-derivation/) and [wallet integration](https://docs.riftenlabs.com/wizardconnect/wallet/) documentation, then inspected the actual published package declarations and JavaScript. npm reported current versions `@wizardconnect/core` 0.2.11 and `@wizardconnect/dapp` 0.2.8; both are pinned in this project.

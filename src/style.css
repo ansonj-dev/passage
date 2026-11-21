@@ -11,3 +11,4 @@
 #result[data-kind="busy"]{border-color:#c9b27a;background:#fbf6e6}#result[data-kind="error"]{border-color:#e0a09b;background:#fff1f0;color:#7a1f19}
 button:disabled{opacity:.5;cursor:not-allowed}.intro aside+aside{margin-top:22px}
 @media(max-width:520px){.stepper{grid-template-columns:repeat(2,1fr)}}
+.walletrow{display:flex;flex-wrap:wrap;gap:10px}.walletrow button{flex:1 1 180px;margin-top:10px}

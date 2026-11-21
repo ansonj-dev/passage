@@ -18,6 +18,16 @@ The bounty also mentions MoriaUSD, but Moria's live app currently displays a V1 
 
 Requires Node 24. `npm ci`, then `npm run dev`; open http://localhost:4101. `npm run compile` generates CashScript and Solidity artifacts. `npm run build` builds the browser bundle.
 
+### WalletConnect configuration
+
+The **Connect with WalletConnect** button uses WalletConnect v2 and needs a free project ID from [WalletConnect/Reown Cloud](https://cloud.reown.com). Set it as a Vite environment variable before building or running the dev server:
+
+```
+VITE_WALLETCONNECT_PROJECT_ID=your_project_id_here
+```
+
+Provide it via your shell environment or a local `.env` file (`.env` is git-ignored; never commit a project ID or any secret). No project ID is bundled. If the variable is empty, the WalletConnect button fails with an explicit error and the injected-wallet path (**Connect EVM wallet**) keeps working unchanged. Live WalletConnect pairing has not been verified in this environment.
+
 The UI prepares a real CashScript Chipnet contract address from public keys and a browser-generated secret. It exports **public terms only**. Closing the browser loses the secret, so save it privately before any funding. Keep it secret until both funded contracts are independently checked and confirmed. A public hash lock alone cannot prove that a counterparty funded the correct contract.
 
 ## What is implemented
@@ -26,6 +36,7 @@ The UI prepares a real CashScript Chipnet contract address from public keys and 
 - Native BCH CashScript claim and refund branches, derived token-aware addresses and a transaction-building CLI using CashScript 0.14.
 - ERC20 Solidity lock, claim and refund contract, exact deposit accounting, replay-resistant IDs, reentrancy guard and events revealing a successful claim preimage.
 - EVM wallet integration through the injected EIP-1193 provider, constrained to chain 31337 or Sepolia. Explicit user wallet approvals and receipts drive EVM status; the app never reports a simulated bridge completion.
+- A WalletConnect v2 option (`@walletconnect/ethereum-provider`) alongside the injected path, so a mobile or remote EVM wallet can pair by QR. It is wrapped by the same ethers `BrowserProvider`, enforces the identical 31337/Sepolia chain guard and reuses the same signer, so claim/lock/refund behave identically. It requires a user-supplied WalletConnect Cloud project ID (see below); no project ID is bundled, and live pairing has not been verified in this environment.
 - An exportable plan and a readable trade lifecycle.
 - WizardConnect HD pairing and standard wallet-input signing for test-token funding of the BCH HTLC. Preparation, signing and Chipnet broadcast are separate actions; arbitrary covenant claim/refund signing remains outside this wallet adapter.
 
@@ -43,7 +54,7 @@ The UI prepares a real CashScript Chipnet contract address from public keys and 
 
 Atomic swap safety depends on network liveness, monitoring, confirmation policy, sufficient timeout margins and prompt claim/refund execution. BCH claim transactions remain valid after expiry, as in conventional Bitcoin HTLCs; a late claim can race a refund. The UI does not enforce real chain observations or prevent a participant from revealing a secret too early. It cannot guarantee safety for unattended use.
 
-No liquidity provider, quote signature, market maker, chain watcher, counterparty matching, automatic preimage extraction or WalletConnect QR integration exists yet. WizardConnect HD pairing/signing is now available for Chipnet funding only; real-wallet interoperability remains unverified. Injected EVM wallets and a BCH CLI are usable integration surfaces for this prototype. The BCH script authorizes recipient/refund keys, and the CLI preserves the token; it is not an issuer bridge or token mint/burn protocol. Fee-on-transfer and rebasing ERC20s are unsupported. Amounts shown in dollars are not price guarantees.
+No liquidity provider, quote signature, market maker, chain watcher, counterparty matching or automatic preimage extraction exists yet. WalletConnect v2 QR pairing for the EVM side is now integrated in code (in addition to injected EVM wallets), but it needs a user-supplied project ID and a live wallet to verify pairing; no successful WalletConnect pairing has been performed in this environment. WizardConnect HD pairing/signing is available for Chipnet funding only; real-wallet interoperability remains unverified. Injected EVM wallets, WalletConnect and a BCH CLI are usable integration surfaces for this prototype. The BCH script authorizes recipient/refund keys, and the CLI preserves the token; it is not an issuer bridge or token mint/burn protocol. Fee-on-transfer and rebasing ERC20s are unsupported. Amounts shown in dollars are not price guarantees.
 
 Needed to complete live evidence: two test wallets, Chipnet BCH and test CashTokens, a Sepolia wallet with gas and test ERC20 inventory, a deployed EVM HTLC, an agreed counterparty, transaction monitoring and a recorded successful two-way lifecycle including refunds. No private keys are bundled. Both contracts compiled and the browser production bundle built successfully; the local server started. Offline tests now exercise public-term validation, both timeout directions and deterministic CashScript contract derivation. No network transaction or full BCH/EVM VM lifecycle test was run. The entry is not submission ready until those steps and review are complete.
 

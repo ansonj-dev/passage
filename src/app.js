@@ -9,6 +9,7 @@ import {
   randomBytes,
   isAddress,
 } from "ethers";
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { preflight } from "../lib/terms.js";
 const $ = (s) => document.querySelector(s);
 let plan, secret;
@@ -49,7 +50,7 @@ $("#app").innerHTML = `
   <label>Deployed StableSwap address<input id="contract" placeholder="0x…"></label>
   <label>ERC-20 test token address<input id="token" placeholder="0x…"></label>
   <label>Receiving counterparty<input id="receiver" placeholder="0x…"></label>
-  <button id="connect" class="secondary">Connect EVM wallet</button>
+  <div class="walletrow"><button id="connect" class="secondary">Connect EVM wallet</button><button id="connect-wc" class="secondary">Connect with WalletConnect</button><button id="disconnect-wc" class="secondary">Disconnect WalletConnect</button></div>
 
   <h2 class="stephead"><i>4</i>Hash-lock plan</h2>
   <button id="prepare">Create hash lock plan <span>→</span></button>
@@ -101,6 +102,7 @@ act("#export", async () => {
   );
 });
 let signer;
+let wcProvider;
 act("#connect", async () => {
   if (!window.ethereum) throw Error("Install an EVM wallet");
   const provider = new BrowserProvider(window.ethereum);
@@ -110,6 +112,41 @@ act("#connect", async () => {
     throw Error("Use local chain 31337 or Sepolia");
   show({ wallet: await signer.getAddress(), chainId: String(chain.chainId) });
   setEvmActions(true);
+});
+act("#connect-wc", async () => {
+  const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+  if (!projectId)
+    throw Error(
+      "WalletConnect is not configured. Create a free project ID at WalletConnect/Reown Cloud (https://cloud.reown.com) and set VITE_WALLETCONNECT_PROJECT_ID in your environment before building. No project ID is bundled with this prototype.",
+    );
+  // Sepolia (11155111) is required; the local EVM chain (31337) is optional
+  // because most WalletConnect wallets will not have it configured.
+  wcProvider = await EthereumProvider.init({
+    projectId,
+    chains: [11155111],
+    optionalChains: [31337],
+    showQrModal: true,
+  });
+  await wcProvider.enable();
+  const provider = new BrowserProvider(wcProvider);
+  signer = await provider.getSigner();
+  const chain = await provider.getNetwork();
+  if (![31337n, 11155111n].includes(chain.chainId))
+    throw Error("Use local chain 31337 or Sepolia");
+  show({
+    wallet: await signer.getAddress(),
+    chainId: String(chain.chainId),
+    transport: "walletconnect",
+  });
+  setEvmActions(true);
+});
+act("#disconnect-wc", async () => {
+  if (wcProvider && typeof wcProvider.disconnect === "function")
+    await wcProvider.disconnect();
+  wcProvider = undefined;
+  signer = undefined;
+  setEvmActions(false);
+  show("WalletConnect session disconnected.");
 });
 const abi = [
   "function lock(address,address,uint256,bytes32,uint256,bytes32) returns(bytes32)",

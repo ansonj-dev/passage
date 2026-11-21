@@ -11,12 +11,19 @@
     "test": "node --test",
     "smoke": "node scripts/smoke.js"
   },
-  "keywords": ["bitcoin-cash", "cashtokens", "atomic-swap", "stablecoin", "walletconnect"],
+  "keywords": [
+    "bitcoin-cash",
+    "cashtokens",
+    "atomic-swap",
+    "stablecoin",
+    "wizardconnect"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "@bitauth/libauth": "3.1.0-next.8",
+    "@walletconnect/ethereum-provider": "2.26.0",
     "@wizardconnect/core": "0.2.11",
     "@wizardconnect/dapp": "0.2.8",
     "cashc": "^0.14.0",

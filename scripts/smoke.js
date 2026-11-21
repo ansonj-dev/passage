@@ -3,7 +3,7 @@ import { once } from "node:events";
 import { SigningKey } from "ethers";
 const children = [];
 async function start(args, marker, env = {}) {
-  const child = spawn(process.execPath, args, { stdio: ["ignore", "pipe", "pipe"], windowsHide: true, env: { ...process.env, ...env } });
+  const child = spawn(process.execPath, args, { stdio: ["pipe", "pipe", "pipe"], windowsHide: true, env: { ...process.env, ...env } });
   children.push(child); let output = "";
   child.stdout.on("data", data => { output += data; }); child.stderr.on("data", data => { output += data; });
   for (let i = 0; i < 100 && !output.includes(marker); i++) {
@@ -24,7 +24,7 @@ try {
   const result = await response.json();
   if (response.status !== 200 || result.network !== "chipnet" || !result.address.startsWith("bchtest:")) throw Error("Chipnet derivation API failed");
   if ((await request({})).status !== 400) throw Error("Malformed contract terms were accepted");
-  await start(["node_modules/vite/bin/vite.js", "preview", "--host", "127.0.0.1", "--port", "14201", "--strictPort"], "Local:");
+  await start(["node_modules/vite/bin/vite.js", "preview", "--host", "127.0.0.1", "--port", "14201", "--strictPort"], "127.0.0.1:14201", { NO_COLOR: "1" });
   const production = "http://127.0.0.1:14201", page = await fetch(production);
   const html = await page.text(), assets = [...html.matchAll(/(?:src|href)="(\/assets\/[^"?#]+)"/g)].map(match => match[1]);
   if (page.status !== 200 || assets.length < 2) throw Error("Production index/assets missing");
